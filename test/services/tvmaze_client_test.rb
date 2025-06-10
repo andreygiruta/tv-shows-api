@@ -31,7 +31,7 @@ class TvmazeClientTest < ActiveSupport::TestCase
 
   test "fetch_schedule handles 404 gracefully" do
     stub_request(:get, "https://api.tvmaze.com/schedule")
-      .with(query: { country: "US" })
+      .with(query: { country: "" })
       .to_return(status: 404)
 
     result = @client.fetch_schedule
@@ -40,7 +40,7 @@ class TvmazeClientTest < ActiveSupport::TestCase
 
   test "fetch_schedule raises RateLimitError on 429" do
     stub_request(:get, "https://api.tvmaze.com/schedule")
-      .with(query: { country: "US" })
+      .with(query: { country: "" })
       .to_return(status: 429)
 
     assert_raises(TvmazeClient::RateLimitError) do
@@ -50,7 +50,7 @@ class TvmazeClientTest < ActiveSupport::TestCase
 
   test "fetch_schedule raises ApiError on other HTTP errors" do
     stub_request(:get, "https://api.tvmaze.com/schedule")
-      .with(query: { country: "US" })
+      .with(query: { country: "" })
       .to_return(status: 500)
 
     assert_raises(TvmazeClient::ApiError) do
