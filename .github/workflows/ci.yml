@@ -121,6 +121,7 @@ jobs:
         context: .
         push: false
         tags: tv-shows-api:test
+        load: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
 

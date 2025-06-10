@@ -15,8 +15,11 @@ jobs:
       postgres:
         image: postgres:15
         env:
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: tv_shows_api_test
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -25,6 +28,8 @@ jobs:
       
       redis:
         image: redis:7-alpine
+        ports:
+          - 6379:6379
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -85,7 +90,7 @@ jobs:
     
     - name: Check for secrets
       run: |
-        if grep -rE "(password|secret|key)\s*[:=]\s*['\"][^'\"]{8,}" --include="*.rb" --include="*.yml" --exclude-dir=".git" --exclude="docker-compose*.yml" --exclude="config/storage.yml" --exclude="config/database.yml" --exclude=".rubocop_todo.yml" .; then
+        if grep -rE "(password|secret|key)\s*[:=]\s*['\"][^'\"]{8,}" --include="*.rb" --include="*.yml" --exclude-dir=".git" --exclude-dir="vendor" --exclude-dir="node_modules" --exclude="docker-compose*.yml" --exclude="config/storage.yml" --exclude="config/database.yml" --exclude=".rubocop_todo.yml" .; then
           echo "❌ Potential hardcoded secrets found in code"
           exit 1
         else
