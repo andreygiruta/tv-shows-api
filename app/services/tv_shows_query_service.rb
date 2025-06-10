@@ -25,9 +25,7 @@ class TvShowsQueryService
   end
 
   def apply_date_filter(episodes)
-    unless params[:date_from].present? && params[:date_to].present?
-      raise ArgumentError, 'date_from and date_to parameters are required'
-    end
+    raise ArgumentError, 'date_from and date_to parameters are required' unless params[:date_from].present? && params[:date_to].present?
 
     date_from, date_to = DateUtilityService.safe_date_range(params[:date_from], params[:date_to])
     episodes.where(release_dates: { airdate: date_from..date_to })
