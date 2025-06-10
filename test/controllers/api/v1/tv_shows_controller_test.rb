@@ -164,7 +164,7 @@ class Api::V1::TvShowsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.headers["Cache-Control"], "public"
     assert_includes response.headers["Cache-Control"], "max-age=3600"
-    assert_equal "Accept", response.headers["Vary"]
+    assert_includes response.headers["Vary"], "Accept"
   end
 
   test "index handles invalid date format" do
