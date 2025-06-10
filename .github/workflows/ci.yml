@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  RUBY_VERSION: '3.2.0'
+  RUBY_VERSION: '3.4.4'
   RAILS_ENV: test
 
 jobs:
