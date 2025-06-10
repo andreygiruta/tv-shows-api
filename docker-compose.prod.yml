@@ -1,0 +1,116 @@
+
+services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tv_shows_api_production}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tv_shows_network
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tv_shows_network
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-tv_shows_api_production}
+      REDIS_URL: redis://redis:6379/0
+      RAILS_ENV: production
+      RAILS_LOG_TO_STDOUT: "1"
+      RAILS_SERVE_STATIC_FILES: "1"
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - tv_shows_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`api.tvshows.local`)"
+      - "traefik.http.services.api.loadbalancer.server.port=3000"
+
+  sidekiq:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-tv_shows_api_production}
+      REDIS_URL: redis://redis:6379/0
+      RAILS_ENV: production
+      RAILS_LOG_TO_STDOUT: "1"
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: bundle exec sidekiq
+    networks:
+      - tv_shows_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE_URL: ${API_BASE_URL:-http://localhost:3000}
+    networks:
+      - tv_shows_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`tvshows.local`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
+  # Optional: Reverse proxy for production
+  traefik:
+    image: traefik:v2.10
+    restart: unless-stopped
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - tv_shows_network
+    profiles:
+      - proxy
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  tv_shows_network:
+    driver: bridge

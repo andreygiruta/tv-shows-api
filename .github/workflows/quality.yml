@@ -1,0 +1,112 @@
+name: Quality Checks
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test Coverage
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: tv_shows_api_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.4.4'
+        bundler-cache: true
+    
+    - name: Set up database
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/tv_shows_api_test
+        REDIS_URL: redis://localhost:6379/0
+        RAILS_ENV: test
+      run: |
+        bundle exec rails db:create db:migrate
+    
+    - name: Run tests with coverage
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/tv_shows_api_test
+        REDIS_URL: redis://localhost:6379/0
+        RAILS_ENV: test
+      run: |
+        bundle exec rails test
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/.resultset.json
+        fail_ci_if_error: true
+
+  lint:
+    name: Linting
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.4.4'
+        bundler-cache: true
+    
+    - name: Run RuboCop
+      run: bundle exec rubocop --format github
+    
+    - name: Run Brakeman security scan
+      run: bundle exec brakeman --no-pager --format json
+    
+    - name: Check for secrets
+      run: |
+        if grep -r "password\|secret\|key" --include="*.rb" --include="*.yml" --exclude-dir=".git" .; then
+          echo "❌ Potential secrets found in code"
+          exit 1
+        else
+          echo "✅ No secrets detected"
+        fi
+
+  dependencies:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.4.4'
+        bundler-cache: true
+    
+    - name: Bundle audit
+      run: |
+        gem install bundler-audit
+        bundle audit --update
