@@ -1,9 +1,9 @@
-require "net/http"
-require "json"
+require 'net/http'
+require 'json'
 
 class TvmazeClient
-  BASE_URL = "https://api.tvmaze.com".freeze
-  USER_AGENT = "TV-Shows-API/1.0".freeze
+  BASE_URL = 'https://api.tvmaze.com'.freeze
+  USER_AGENT = 'TV-Shows-API/1.0'.freeze
   RATE_LIMIT_DELAY = 0.5 # 0.5 seconds between requests to respect rate limits
 
   class ApiError < StandardError; end
@@ -13,14 +13,14 @@ class TvmazeClient
     @last_request_time = Time.current
   end
 
-  def fetch_schedule(country: "", date: nil)
+  def fetch_schedule(country: '', date: nil)
     params = { country: country }
-    params[:date] = date.strftime("%Y-%m-%d") if date
+    params[:date] = date.strftime('%Y-%m-%d') if date
 
-    get_request("/schedule", params)
+    get_request('/schedule', params)
   end
 
-  def fetch_schedule_range(start_date, end_date, country: "")
+  def fetch_schedule_range(start_date, end_date, country: '')
     episodes = []
     current_date = start_date
 
@@ -43,7 +43,7 @@ class TvmazeClient
     episodes
   end
 
-  def fetch_upcoming_episodes(days: 90, country: "")
+  def fetch_upcoming_episodes(days: 90, country: '')
     start_date = Date.current
     end_date = start_date + days.days
 
@@ -62,7 +62,7 @@ class TvmazeClient
     http.use_ssl = true
 
     request = Net::HTTP::Get.new(uri)
-    request["User-Agent"] = USER_AGENT
+    request['User-Agent'] = USER_AGENT
 
     response = http.request(request)
 
@@ -70,7 +70,7 @@ class TvmazeClient
     when 200
       JSON.parse(response.body)
     when 429
-      raise RateLimitError, "Rate limit exceeded"
+      raise RateLimitError, 'Rate limit exceeded'
     when 404
       Rails.logger.warn "Not found: #{uri}"
       nil
@@ -87,9 +87,7 @@ class TvmazeClient
 
   def respect_rate_limit
     time_since_last_request = Time.current - @last_request_time
-    if time_since_last_request < RATE_LIMIT_DELAY
-      sleep(RATE_LIMIT_DELAY - time_since_last_request)
-    end
+    sleep(RATE_LIMIT_DELAY - time_since_last_request) if time_since_last_request < RATE_LIMIT_DELAY
     @last_request_time = Time.current
   end
 end

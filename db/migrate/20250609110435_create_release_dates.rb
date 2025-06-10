@@ -9,7 +9,7 @@ class CreateReleaseDates < ActiveRecord::Migration[7.2]
     end
 
     add_index :release_dates, :airdate
-    add_index :release_dates, [ :airdate, :episode_id ], unique: true
-    add_index :release_dates, [ :airdate, :airtime ]
+    add_index :release_dates, %i[airdate episode_id], unique: true
+    add_index :release_dates, %i[airdate airtime]
   end
 end

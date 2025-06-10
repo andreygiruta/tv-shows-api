@@ -17,7 +17,7 @@ class CreateEpisodes < ActiveRecord::Migration[7.2]
     end
 
     add_index :episodes, :tvmaze_id, unique: true
-    add_index :episodes, [ :tv_show_id, :season, :episode_number ], unique: true
+    add_index :episodes, %i[tv_show_id season episode_number], unique: true
     add_index :episodes, :season
     add_index :episodes, :episode_number
   end
