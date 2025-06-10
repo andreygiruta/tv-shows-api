@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  RUBY_VERSION: '3.2.0'
+  RUBY_VERSION: '3.4.4'
   RAILS_ENV: test
 
 jobs:
@@ -121,6 +121,7 @@ jobs:
         context: .
         push: false
         tags: tv-shows-api:test
+        load: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
 

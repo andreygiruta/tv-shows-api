@@ -11,7 +11,7 @@ class ShowSerializer
       language: show.language,
       status: show.status,
       rating: show.rating,
-      genres: show.genres&.split(", "),
+      genres: show.genres&.split(', '),
       image_medium: show.image_medium,
       image_original: show.image_original,
       network: network_json

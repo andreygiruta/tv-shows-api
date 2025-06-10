@@ -1,5 +1,5 @@
-require "test_helper"
-require "webmock/minitest"
+require 'test_helper'
+require 'webmock/minitest'
 
 class DailyTvmazeImportJobTest < ActiveSupport::TestCase
   def setup
@@ -15,7 +15,7 @@ class DailyTvmazeImportJobTest < ActiveSupport::TestCase
     WebMock.disable!
   end
 
-  test "should perform import with default parameters" do
+  test 'should perform import with default parameters' do
     result = @job.perform
 
     # Should return a hash with processed and errors keys
@@ -24,17 +24,17 @@ class DailyTvmazeImportJobTest < ActiveSupport::TestCase
     assert result.key?(:errors)
   end
 
-  test "should call TvmazeImportService" do
+  test 'should call TvmazeImportService' do
     # Test that job creates and calls the service
     assert_nothing_raised do
       @job.perform
     end
   end
 
-  test "should accept custom parameters" do
+  test 'should accept custom parameters' do
     # Test that custom parameters don't cause errors
     assert_nothing_raised do
-      @job.perform(30, "CA")
+      @job.perform(30, 'CA')
     end
   end
 end

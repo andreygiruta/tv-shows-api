@@ -27,6 +27,6 @@ class CreateTvShows < ActiveRecord::Migration[7.2]
     add_index :tv_shows, :status
     add_index :tv_shows, :premiered
     add_index :tv_shows, :rating
-    add_index :tv_shows, [ :network_id, :status ]
+    add_index :tv_shows, %i[network_id status]
   end
 end

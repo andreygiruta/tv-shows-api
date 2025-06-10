@@ -9,10 +9,10 @@ class Distributor < ApplicationRecord
   def self.find_or_create_by_tvmaze_data(network_data)
     return nil unless network_data
 
-    find_or_create_by(tvmaze_id: network_data["id"]) do |distributor|
-      distributor.name = network_data["name"]
-      distributor.country = network_data.dig("country", "name")
-      distributor.official_site = network_data["officialSite"]
+    find_or_create_by(tvmaze_id: network_data['id']) do |distributor|
+      distributor.name = network_data['name']
+      distributor.country = network_data.dig('country', 'name')
+      distributor.official_site = network_data['officialSite']
     end
   end
 end

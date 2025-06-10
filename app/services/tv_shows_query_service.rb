@@ -5,8 +5,8 @@ class TvShowsQueryService
 
   def call
     episodes = Episode.includes(includes_hash)
-                     .joins(tv_show: :network)
-                     .joins(:release_dates)
+                      .joins(tv_show: :network)
+                      .joins(:release_dates)
     episodes = apply_date_filter(episodes)
     episodes = apply_optional_filters(episodes)
     episodes = apply_ordering(episodes)
@@ -25,12 +25,10 @@ class TvShowsQueryService
   end
 
   def apply_date_filter(episodes)
-    if params[:date_from].present? && params[:date_to].present?
-      date_from, date_to = DateUtilityService.safe_date_range(params[:date_from], params[:date_to])
-      episodes.where(release_dates: { airdate: date_from..date_to })
-    else
-      raise ArgumentError, "date_from and date_to parameters are required"
-    end
+    raise ArgumentError, 'date_from and date_to parameters are required' unless params[:date_from].present? && params[:date_to].present?
+
+    date_from, date_to = DateUtilityService.safe_date_range(params[:date_from], params[:date_to])
+    episodes.where(release_dates: { airdate: date_from..date_to })
   end
 
   def apply_optional_filters(episodes)
@@ -49,12 +47,12 @@ class TvShowsQueryService
   end
 
   def filter_by_rating(episodes)
-    episodes.where("tv_shows.rating >= ?", params[:rating].to_f)
+    episodes.where('tv_shows.rating >= ?', params[:rating].to_f)
   end
 
   def apply_ordering(episodes)
     episodes.order(
-      "release_dates.airdate ASC, release_dates.airtime ASC, tv_shows.name ASC, episodes.season ASC, episodes.episode_number ASC"
+      'release_dates.airdate ASC, release_dates.airtime ASC, tv_shows.name ASC, episodes.season ASC, episodes.episode_number ASC'
     )
   end
 

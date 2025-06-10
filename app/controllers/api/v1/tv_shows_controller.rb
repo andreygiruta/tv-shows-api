@@ -42,9 +42,9 @@ class Api::V1::TvShowsController < ApplicationController
 
   def networks
     @networks = Distributor.joins(:tv_shows)
-                          .select(:name)
-                          .distinct
-                          .order(:name)
+                           .select(:name)
+                           .distinct
+                           .order(:name)
 
     render json: {
       data: @networks.pluck(:name)
@@ -53,10 +53,10 @@ class Api::V1::TvShowsController < ApplicationController
 
   def countries
     @countries = Distributor.joins(:tv_shows)
-                           .select(:country)
-                           .distinct
-                           .where.not(country: nil)
-                           .order(:country)
+                            .select(:country)
+                            .distinct
+                            .where.not(country: nil)
+                            .order(:country)
 
     render json: {
       data: @countries.pluck(:country)
@@ -96,7 +96,7 @@ class Api::V1::TvShowsController < ApplicationController
   end
 
   def set_cache_headers
-    response.headers["Cache-Control"] = "public, max-age=3600"
-    response.headers["Vary"] = "Accept"
+    response.headers['Cache-Control'] = 'public, max-age=3600'
+    response.headers['Vary'] = 'Accept'
   end
 end

@@ -1,25 +1,25 @@
-ENV["RAILS_ENV"] ||= "test"
+ENV['RAILS_ENV'] ||= 'test'
 
 # Start SimpleCov before loading application code
-require "simplecov"
-SimpleCov.start "rails" do
-  add_filter "/bin/"
-  add_filter "/db/"
-  add_filter "/spec/" # if using RSpec
-  add_filter "/test/"
+require 'simplecov'
+SimpleCov.start 'rails' do
+  add_filter '/bin/'
+  add_filter '/db/'
+  add_filter '/spec/' # if using RSpec
+  add_filter '/test/'
 
-  add_group "Controllers", "app/controllers"
-  add_group "Models", "app/models"
-  add_group "Services", "app/services"
-  add_group "Jobs", "app/jobs"
+  add_group 'Controllers', 'app/controllers'
+  add_group 'Models', 'app/models'
+  add_group 'Services', 'app/services'
+  add_group 'Jobs', 'app/jobs'
 
   minimum_coverage 70
   # Allow some files to have lower coverage (configuration, etc.)
   # minimum_coverage_by_file 60
 end
 
-require_relative "../config/environment"
-require "rails/test_help"
+require_relative '../config/environment'
+require 'rails/test_help'
 
 module ActiveSupport
   class TestCase
