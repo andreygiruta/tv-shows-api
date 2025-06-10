@@ -3,7 +3,7 @@ class DailyTvmazeImportJob
 
   sidekiq_options retry: 3, queue: "default"
 
-  def perform(days = 90, country = "US")
+  def perform(days = 90, country = "")
     Rails.logger.info "Starting daily TVMaze import job"
 
     start_time = Time.current

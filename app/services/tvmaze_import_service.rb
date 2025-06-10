@@ -4,7 +4,7 @@ class TvmazeImportService
     @logger = Rails.logger
   end
 
-  def import_upcoming_episodes(days: 90, country: "US")
+  def import_upcoming_episodes(days: 90, country: "")
     @logger.info "Starting import of upcoming episodes for #{days} days"
 
     episodes_data = @client.fetch_upcoming_episodes(days: days, country: country)

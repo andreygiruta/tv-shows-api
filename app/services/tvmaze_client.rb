@@ -13,14 +13,14 @@ class TvmazeClient
     @last_request_time = Time.current
   end
 
-  def fetch_schedule(country: "US", date: nil)
+  def fetch_schedule(country: "", date: nil)
     params = { country: country }
     params[:date] = date.strftime("%Y-%m-%d") if date
 
     get_request("/schedule", params)
   end
 
-  def fetch_schedule_range(start_date, end_date, country: "US")
+  def fetch_schedule_range(start_date, end_date, country: "")
     episodes = []
     current_date = start_date
 
@@ -43,7 +43,7 @@ class TvmazeClient
     episodes
   end
 
-  def fetch_upcoming_episodes(days: 90, country: "US")
+  def fetch_upcoming_episodes(days: 90, country: "")
     start_date = Date.current
     end_date = start_date + days.days
 

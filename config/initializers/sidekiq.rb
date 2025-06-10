@@ -9,7 +9,7 @@ Sidekiq.configure_server do |config|
     "daily_tvmaze_import" => {
       "cron" => "0 2 * * *",
       "class" => "DailyTvmazeImportJob",
-      "args" => [ 90, "US" ]
+      "args" => [ 90, "" ]
     }
   })
 end
