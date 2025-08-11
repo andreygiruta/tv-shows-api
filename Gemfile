@@ -30,7 +30,7 @@ gem 'bootsnap', require: false
 gem 'rack-cors'
 
 # Background job processing
-gem 'sidekiq', '~> 7.0'
+gem 'sidekiq', '~> 8.0'
 gem 'sidekiq-cron', '~> 1.0'
 
 # API pagination
