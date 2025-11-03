@@ -31,7 +31,7 @@ gem 'rack-cors'
 
 # Background job processing
 gem 'sidekiq', '~> 7.0'
-gem 'sidekiq-cron', '~> 1.0'
+gem 'sidekiq-cron', '~> 2.3'
 
 # API pagination
 gem 'kaminari', '~> 1.2'
